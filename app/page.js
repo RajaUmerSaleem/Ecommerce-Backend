@@ -49,7 +49,7 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <main className="w-[100vw] h-[100vh] flex " >
+      <main className="w-[100vw] h-[80vh] flex " >
         <div className="w-[20%]"><Sidebar /></div>
         <div className=" bg-white w-[80%] h-full flex flex-col p-4 text9-blue-50">
           <Form />

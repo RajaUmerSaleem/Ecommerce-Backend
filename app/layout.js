@@ -9,9 +9,9 @@ export const metadata = {
   description: "Ecommerce Website Admin Portal",  
 };  
 
-export default function RootLayout({ children }) {  
+export default function RootLayout({ children }) { 
   return (  
-    <html lang="en">  
+    <html lang="en" >  
       <SessionWraper>  
         <body className={inter.className}>{children}</body>  
       </SessionWraper>  

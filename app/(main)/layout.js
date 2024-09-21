@@ -12,10 +12,10 @@ export const metadata = {
 export default function AdminLayout({ children }) {
   return (
     <>
-      <div className={inter.className}>
+      <div className=" h-[92vh]">
       <Navbar />
-        <main className="w-full h-[100vh] flex">
-          <div className="w-[20%]"><Sidebar /></div>
+        <main className="w-full h-full flex">
+          <div className="w-[20%] "><Sidebar /></div>
           <div className=" bg-white w-[80%] h-full flex flex-col p-4 text9-blue-50">
             {children}
           </div>

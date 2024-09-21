@@ -5,3 +5,7 @@
 /* .yango{
     @apply text-[50px] font-bold text-[#FFC107];
 } */
+
+.shadelow{
+    @apply hover:bg-slate-200;
+}
