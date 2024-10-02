@@ -6,7 +6,7 @@ const Navbar = () => {
   const { data: session } = useSession();
 
   return (
-    <nav className="flex items-center w-full justify-between h-[48px] gap-3 px-4 bg-yellow-500">
+    <nav className="flex items-center w-full justify-between h-[48px] gap-3 px-4 bg-blue-900 ">
       <div className="text-white text-lg font-bold w-[40%] ">Admin Portal</div>
       <div className="flex justify-between w-[60%]">
         {session ? (
@@ -17,7 +17,7 @@ const Navbar = () => {
               >
                 Logout
               </button>
-            <div className="flex items-center w-[30%] space-x-4">
+            <div className="flex items-center w-[30%] space-x-4 text-white ">
               <div>{session.user.name}</div>
               <Image
                 src={session.user.image}

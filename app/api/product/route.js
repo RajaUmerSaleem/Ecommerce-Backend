@@ -4,18 +4,19 @@ import Product from '@/models/Product';
 export async function POST(req) {
   await connectDB();
 
-  const { title, description, price, mediaUrl } = await req.json();
+  const { name, description, price, category, images } = await req.json();
 
-  if (!title || !description || !price || !mediaUrl) {
-    return new Response(JSON.stringify({ message: 'All fields are required' }), { status: 400 });
+  if (!name || !description || !price || !category || !images || !Array.isArray(images)) {
+    return new Response(JSON.stringify({ message: 'All fields are required and images must be an array' }), { status: 400 });
   }
 
   try {
     const product = new Product({
-      title,
+      name,
       description,
       price,
-      mediaUrl,
+      category,
+      images,
       createdAt: new Date(),
     });
     await product.save();
@@ -30,16 +31,16 @@ export async function POST(req) {
 export async function PUT(req) {
   await connectDB();
 
-  const { productId, title, description, price, mediaUrl } = await req.json();
+  const { productId, name, description, price, category, images } = await req.json();
 
-  if (!productId || !title || !description || !price || !mediaUrl) {
-    return new Response(JSON.stringify({ message: 'All fields are required' }), { status: 400 });
+  if (!productId || !name || !description || !price || !category || !images || !Array.isArray(images)) {
+    return new Response(JSON.stringify({ message: 'All fields are required and images must be an array' }), { status: 400 });
   }
 
   try {
     const updatedProduct = await Product.findByIdAndUpdate(
       productId,
-      { title, description, price, mediaUrl },
+      { name, description, price, category, images },
       { new: true }
     );
 
@@ -53,11 +54,12 @@ export async function PUT(req) {
     return new Response(JSON.stringify({ message: 'Internal Server Error' }), { status: 500 });
   }
 }
+
 export async function GET(req) {
   await connectDB();
 
   try {
-    const products = await Product.find({});
+    const products = await Product.find({}).populate('category');
     return new Response(JSON.stringify(products), { status: 200 });
   } catch (error) {
     console.error(error);

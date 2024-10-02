@@ -9,8 +9,10 @@ const Form = () => {
   const [productName, setProductName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
-  const [image, setImage] = useState(null);
-  const [imageUrl, setImageUrl] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState(''); 
+  const [categories, setCategories] = useState([]);
+  const [images, setImages] = useState([]);
+  const [imageUrls, setImageUrls] = useState([]);
   const [error, setError] = useState(null);
   const [editProductId, setEditProductId] = useState(null);
   const router = useRouter();
@@ -21,40 +23,57 @@ const Form = () => {
     const title = searchParams.get('title');
     const desc = searchParams.get('description');
     const prc = searchParams.get('price');
-    const img = searchParams.get('mediaUrl');
-
-    if (id && title && desc && prc && img) {
+    const cat = searchParams.get('category');
+    const imgs = searchParams.get('mediaUrl') ? [searchParams.get('mediaUrl')] : [];
+    console.log('Search Params:', searchParams);
+    if (id && title && desc && prc && cat && imgs.length) {
       setEditProductId(id);
       setProductName(title);
       setDescription(desc);
       setPrice(prc);
-      setImageUrl(img);
+      setSelectedCategory(cat); 
+      setImageUrls(imgs);
     }
   }, [searchParams]);
+  
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('/api/category');
+        setCategories(response.data);
+        console.log('Categories:', response.data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImage(file);
-    }
+    const files = Array.from(e.target.files);
+    setImages(files);
   };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     try {
-      let uploadedImageUrl = imageUrl;
-      if (image) {
-        const storageRef = ref(storage, `images/${image.name}`);
-        await uploadBytes(storageRef, image);
-        uploadedImageUrl = await getDownloadURL(storageRef);
-        console.log('File available at', uploadedImageUrl);
+      let uploadedImageUrls = [...imageUrls];
+      if (images.length) {
+        const uploadPromises = images.map(async (image) => {
+          const storageRef = ref(storage, `images/${image.name}`);
+          await uploadBytes(storageRef, image);
+          return await getDownloadURL(storageRef);
+        });
+        uploadedImageUrls = await Promise.all(uploadPromises);
       }
 
       const productData = {
-        title: productName,
+        name: productName,
         description,
         price,
-        mediaUrl: uploadedImageUrl,
+        category: selectedCategory,
+        images: uploadedImageUrls,
       };
 
       let response;
@@ -111,20 +130,43 @@ const Form = () => {
             placeholder="Enter Price"
           />
         </div>
+        <div className="mb-2">
+          <label className="block text-gray-700">Category</label>
+          <select
+            name="category"
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="w-full px-3 py-2 border rounded"
+          >
+            <option value="">Select Category</option>
+            {categories.map((cat) => (
+              <option key={cat._id} value={cat._id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className="mb-2 flex flex-col">
-          <label htmlFor="image" className="block text-gray-700">Image</label>
+          <label htmlFor="images" className="block text-gray-700">Images</label>
           <label className="text-gray-700 h-[100px] w-[100px] bg-slate-500 flex items-center gap-1 hover:rounded-lg border cursor-pointer">
             <input
               type="file"
-              id="image"
+              id="images"
               className="hidden"
+              multiple
               onChange={handleImageChange}
             />
-            {image ? (
-              <img src={URL.createObjectURL(image)} className="h-[100px] w-[100px] object-cover rounded-lg" alt="Selected" />
+            {images.length ? (
+              images.map((image, index) => (
+                <img key={index} src={URL.createObjectURL(image)} className="h-[100px] w-[100px] object-cover rounded-lg" alt="Selected" />
+              ))
             ) : (
-              imageUrl && (
-                <img src={imageUrl} className="h-[100px] w-[100px] object-cover rounded-lg" alt="Selected" />
+              imageUrls.length ? (
+                imageUrls.map((url, index) => (
+                  <img key={index} src={url} className="h-[100px] w-[100px] object-cover rounded-lg" alt="Selected" />
+                ))
+              ) : (
+                <span className="text-gray-700 text-center">Select Images</span>
               )
             )}
           </label>
