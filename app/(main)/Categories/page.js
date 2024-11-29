@@ -46,19 +46,16 @@ const Categories = () => {
       return;
     }
 
-    console.log('Form submitted with:', { name, parent, properties, brand, color });
-
     try {
       const response = await axios.post('/api/category', { name, parent, properties, brand, color });
-      console.log('Response from server:', response.data);
       fetchCategories();
       setName('');
       setParent(null);
-      setProperties(''); // Reset properties field
-      setBrand(''); // Reset brand field
-      setColor(''); // Reset color field
-      setEdit(false); // Reset edit mode
-      setError(null); // Clear error message
+      setProperties('');
+      setBrand('');
+      setColor(''); 
+      setEdit(false);
+      setError(null); 
     } catch (error) {
       setError('Error submitting form');
       console.error('Error submitting form:', error.response ? error.response.data : error.message);

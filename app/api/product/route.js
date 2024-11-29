@@ -20,7 +20,6 @@ export async function POST(req) {
       createdAt: new Date(),
     });
     await product.save();
-
     return new Response(JSON.stringify(product), { status: 201 });
   } catch (error) {
     console.error(error);

@@ -7,7 +7,7 @@ const Navbar = () => {
 
   return (
     <nav className="flex items-center w-full justify-between h-[48px] gap-3 px-4 bg-blue-900 ">
-      <div className="text-white text-lg font-bold w-[40%] ">Admin Portal</div>
+      <div className="text-white text-lg font-bold w-[40%] "> Ecommerce Admin</div>
       <div className="flex justify-between w-[60%]">
         {session ? (
           <>

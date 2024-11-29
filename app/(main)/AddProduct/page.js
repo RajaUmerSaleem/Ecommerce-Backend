@@ -1,50 +1,41 @@
 "use client";
+import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
-
 const Page = () => {
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const router = useRouter();
-  
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get('/api/product');
         setProducts(response.data);
-        console.log('Products:', response.data);
       } catch (error) {
         console.error('Error fetching products:', error);
       }
     };
-
     fetchProducts();
   }, []);
 
   const handleEdit = async (product) => {
     try {
-      let n = prompt("Are you sure you want to edit this product? Type 'yes' to confirm.");
-      if (n == "yes") {
-        alert("Product Edit Initiated");
-        const query = new URLSearchParams({
-          id: product._id,
-          title: product.name,
-          description: product.description,
-          price: product.price,
-          category: product.category._id,
-          mediaUrl: product.images.length > 0 ? product.images[0] : undefined,
-        }).toString();
-        router.push(`/Product?${query}`);
-      } else {
-        alert("Product Edit Cancelled");
-      }
+      alert("Product Edit Initiated");
+      const query = new URLSearchParams({
+        id: product._id,
+        title: product.name,
+        description: product.description,
+        price: product.price,
+        category: product.category._id,
+        mediaUrl: product.images.length > 0 ? product.images[0] : undefined,
+      }).toString();
+      router.push(`/Product?${query}`);
     } catch (error) {
       console.error('Error editing product:', error);
     }
   };
-
   const handleDelete = async (productId) => {
     try {
       let n = prompt("Are you sure you want to delete this product? Type 'yes' to confirm.");
@@ -52,6 +43,7 @@ const Page = () => {
         alert("Product Deleted Successfully");
         await axios.delete('/api/product', { data: { productId } });
         const response = await axios.get('/api/product');
+        console.log("product",response.data);
         setProducts(response.data);
       } else {
         alert("Product Not Deleted");
@@ -77,28 +69,33 @@ const Page = () => {
         <div className="min-w-full bg-white">
           <table className="w-full">
             <thead>
-              <tr>
-                <th className="py-2 px-4 border-[2px] border-black">Title</th>
-                <th className="py-2 px-4 border-[2px] border-black">Description</th>
-                <th className="py-2 px-4 border-[2px] border-black">Price</th>
+              <tr className='bg-blue-500 text-white'>
+                <th className="py-2 px-4 border-[2px] border-black w-[80%]">Title</th>
                 <th className="py-2 px-4 border-[2px] border-black">Actions</th>
               </tr>
             </thead>
             <tbody>
               {products.map((product) => (
                 <tr key={product._id}>
-                  <td className="py-2 px-4 border shadelow">{product.name}</td>
-                  <td className="py-2 px-4 border shadelow">{product.description}</td>
-                  <td className="py-2 px-4 border shadelow">${product.price}</td>
-                  <td className="border flex justify-around items-center">
-                    <button onClick={() => handleDelete(product._id)} className="h-full shadelow text-blue-900 font-extrabold flex justify-center items-center"><img className="w-[35px]" src="delete-2-svgrepo-com.svg" alt="yango" /></button>
-                    <button onClick={() => handleEdit(product)} className="h-full shadelow text-blue-900 font-extrabold flex justify-center items-center"><img className="w-[35px]" src="edit-svgrepo-com (1).svg" alt="yango" /></button>
-                    <button onClick={() => handleViewDetails(product)} className="h-full shadelow text-blue-900 font-extrabold flex justify-center items-center"><img className="w-[35px]" src="view-svgrepo-com.svg" alt="view" /></button>
+                  <td className="py-2 px-4 border shadelow w-[80%]">{product.name}</td>
+                  <td className="border flex justify-around items-center px-[20px]">
+                    <button onClick={() => handleDelete(product._id)} className="h-full shadelow text-blue-900 font-extrabold flex justify-center items-center">
+                      <Image className="w-[35px]" src="/delete-2-svgrepo-com.svg" alt="Delete" width={35} height={35} />
+                    </button>
+                    <button onClick={() => handleEdit(product)} className="h-full shadelow text-blue-900 font-extrabold flex justify-center items-center">
+                      <Image className="w-[35px]" src="/edit-svgrepo-com (1).svg" alt="Edit" width={35} height={35} />
+                    </button>
+                    <button onClick={() => handleViewDetails(product)} className="h-full shadelow text-blue-900 font-extrabold flex justify-center items-center">
+                      <Image className="w-[35px]" src="/view-svgrepo-com.svg" alt="View" width={35} height={35} />
+                    </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          {products.length === 0 && (
+            <div className="font-bold w-full h-[50vh] flex justify-center items-center" >Add Data first to list here</div>
+          )}
         </div>
       </div>
       {selectedProduct && (
@@ -112,7 +109,14 @@ const Page = () => {
             <strong>Images:</strong>
             <div className="flex">
               {selectedProduct.images.map((image, index) => (
-                <img key={index} src={image} alt={`Product Image ${index + 1}`} className="w-24 h-24 mr-2" />
+                <Image
+                  key={index}
+                  src={image}
+                  alt={`Product Image ${index + 1}`}
+                  width={96}
+                  height={96}
+                  className="mr-2 object-cover rounded-lg"
+                />
               ))}
             </div>
           </div>
@@ -122,5 +126,4 @@ const Page = () => {
     </>
   );
 };
-
 export default Page;

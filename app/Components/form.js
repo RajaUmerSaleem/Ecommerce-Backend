@@ -4,12 +4,12 @@ import { storage } from '@/lib/firebase';
 import React, { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
-
+import Image from 'next/image';
 const Form = () => {
   const [productName, setProductName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState(''); 
+  const [selectedCategory, setSelectedCategory] = useState('');
   const [categories, setCategories] = useState([]);
   const [images, setImages] = useState([]);
   const [imageUrls, setImageUrls] = useState([]);
@@ -31,11 +31,11 @@ const Form = () => {
       setProductName(title);
       setDescription(desc);
       setPrice(prc);
-      setSelectedCategory(cat); 
+      setSelectedCategory(cat);
       setImageUrls(imgs);
     }
   }, [searchParams]);
-  
+
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -158,12 +158,26 @@ const Form = () => {
             />
             {images.length ? (
               images.map((image, index) => (
-                <img key={index} src={URL.createObjectURL(image)} className="h-[100px] w-[100px] object-cover rounded-lg" alt="Selected" />
+                <Image
+                  key={index}
+                  src={URL.createObjectURL(image)}
+                  height={100}
+                  width={100}
+                  className="object-cover rounded-lg"
+                  alt="Selected"
+                />
               ))
             ) : (
               imageUrls.length ? (
                 imageUrls.map((url, index) => (
-                  <img key={index} src={url} className="h-[100px] w-[100px] object-cover rounded-lg" alt="Selected" />
+                  <Image
+                    key={index}
+                    src={url}
+                    height={100}
+                    width={100}
+                    className="object-cover rounded-lg"
+                    alt="Selected"
+                  />
                 ))
               ) : (
                 <span className="text-gray-700 text-center">Select Images</span>
